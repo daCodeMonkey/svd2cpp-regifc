@@ -15,7 +15,6 @@ def convert(svd_file, ignore_cluster_regex):
     interrupts = list_interrupts(device)
 
     # TODO: update generate to accomodate for:
-    # - Overlapping registers should be generated in a union
     # - Allow a subset of registers to be clustered, and generate the overlapping registers, e.g., if the first register in the cluster has an additional 'enable' bit
     # - Check SVDAccessType and maybe improve the register interface based on that (e.g., read-only fields do not get the 'write()' function)
     generate(device, groups, interrupts)
@@ -51,6 +50,10 @@ def generate(device, groups, interrupts):
             var_name = '_' + var_name
         return var_name
     env.filters["cvar"] = cvar
+
+    def raise_helper(msg):
+        raise Exception(msg)
+    env.globals['raise'] = raise_helper
 
     parameters = {
         'device': device,
