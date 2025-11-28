@@ -55,6 +55,19 @@ def generate(device, groups, interrupts):
         raise Exception(msg)
     env.globals['raise'] = raise_helper
 
+    def find_common_prefix(names):
+        if not names:
+            return ''
+        prefix = names[0]
+        for name in names[1:]:
+            while not name.startswith(prefix):
+                prefix = prefix[:-1]
+                if not prefix:
+                    raise Exception("No common prefix found")
+        prefix = prefix.rstrip('_')
+        return prefix
+    env.globals['find_common_prefix'] = find_common_prefix
+
     parameters = {
         'device': device,
         'groups': groups,

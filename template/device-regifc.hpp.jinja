@@ -55,7 +55,11 @@ struct {{struct_name}} : public Register<std::uint{{register.size}}_t, {{"0x%0*X
 {% if not ns.union_active and union_needed %}
     union {
 {% set ns.union_active = true %}
+{% set ns.union_names = [] %}
 {% set ns.union_end_address = register.address_offset + register.size // 8 %}
+{% endif %}
+{% if ns.union_active %}
+{% set ns.union_names = ns.union_names + [register.name] %}
 {% endif %}
 {% if ns.union_active and ns.union_end_address != (register.address_offset + register.size // 8) %}
 {{ raise("Overlapping registers in union must have the same size " + ns.union_end_address + ", " + register.address_offset + ", " + register.size) }}
@@ -76,8 +80,9 @@ struct {{struct_name}} : public Register<std::uint{{register.size}}_t, {{"0x%0*X
 {% endif %}
 {% endif %}
 {% if ns.union_active and not union_needed %}
-    };
+    } {{ find_common_prefix(ns.union_names) }};
 {% set ns.union_active = false %}
+{% set ns.union_names = [] %}
 {% endif %}
 {% endfor %}
 {% endmacro %}
