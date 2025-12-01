@@ -57,7 +57,8 @@ def generate(device, groups, interrupts):
 
     def find_common_prefix(names):
         if not names:
-            return ''
+            return '', []
+
         prefix = names[0]
         for name in names[1:]:
             while not name.startswith(prefix):
@@ -65,7 +66,16 @@ def generate(device, groups, interrupts):
                 if not prefix:
                     raise Exception("No common prefix found")
         prefix = prefix.rstrip('_')
-        return prefix
+        
+        stripped_names = []
+        for name in names:
+            stripped_name = name[len(prefix):].lstrip('_')
+            # if the stripped name starts with a digit, prefix with underscore
+            if (stripped_name[0].isdigit()):
+                stripped_name = '_' + stripped_name
+            stripped_names.append(stripped_name)
+        print(f'Common prefix: "{prefix}" for names: {names} -> stripped names: {stripped_names}')
+        return prefix, stripped_names
     env.globals['find_common_prefix'] = find_common_prefix
 
     parameters = {
